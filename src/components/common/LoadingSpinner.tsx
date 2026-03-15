@@ -12,12 +12,20 @@ const LoadingSpinner = ({ message = "Loading..." }: LoadingSpinnerProps) => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: "400px",
+        minHeight: "60vh",
         gap: 2,
+        background: "transparent",
       }}
     >
-      <CircularProgress />
-      <Typography variant="body1" color="text.secondary">
+      <CircularProgress size={36} thickness={3} sx={{ color: "#FFC850" }} />
+      <Typography
+        sx={{
+          color: "rgba(255,255,255,0.3)",
+          fontSize: "0.82rem",
+          letterSpacing: "0.05em",
+          fontWeight: 500,
+        }}
+      >
         {message}
       </Typography>
     </Box>

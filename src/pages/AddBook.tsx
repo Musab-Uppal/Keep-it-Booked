@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { Container, Paper, Typography, Box } from "@mui/material";
+import { Typography, Box, IconButton } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useBooks } from "../hooks/useBooks";
 import BookForm from "../components/books/BookForm";
 import { BookFormData } from "../types";
@@ -21,44 +22,110 @@ const AddBook = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
-        pb: 4,
         width: "100%",
+        background:
+          "linear-gradient(160deg, #0a0a14 0%, #0f0f22 50%, #0d1220 100%)",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <Container sx={{ pt: 4, px: { xs: 2, md: 4 }, maxWidth: "600px" }}>
-        <Paper
-          elevation={0}
+      {/* Top bar */}
+      <Box
+        sx={{
+          px: { xs: 2, md: 3 },
+          pt: 2,
+          pb: 1.5,
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          borderBottom: "1px solid rgba(255,255,255,0.04)",
+        }}
+      >
+        <IconButton
+          onClick={() => navigate("/dashboard")}
           sx={{
-            p: 4,
-            animation: "fadeIn 0.5s ease-out",
-            background:
-              "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%)",
-            border: "1px solid rgba(229, 231, 235, 0.6)",
-            borderRadius: 3,
-            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08)",
+            color: "rgba(255,255,255,0.5)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "10px",
+            width: 32,
+            height: 32,
+            transition: "all 0.2s",
+            "&:hover": {
+              color: "#FFC850",
+              borderColor: "rgba(255,200,80,0.3)",
+              background: "rgba(255,200,80,0.06)",
+              transform: "translateX(-2px)",
+            },
           }}
         >
+          <ArrowBackIcon sx={{ fontSize: 18 }} />
+        </IconButton>
+        <Box>
           <Typography
-            variant="h5"
-            gutterBottom
             sx={{
+              fontSize: "0.65rem",
               fontWeight: 700,
-              background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
+              letterSpacing: "0.15em",
+              color: "#FFC850",
+              textTransform: "uppercase",
+              opacity: 0.8,
             }}
           >
-            📚 Add New Book
+            Library
           </Typography>
+          <Typography
+            sx={{
+              fontWeight: 800,
+              fontSize: "0.95rem",
+              color: "rgba(255,255,255,0.9)",
+              letterSpacing: "-0.02em",
+              fontFamily: "'Georgia', serif",
+            }}
+          >
+            Add New Book
+          </Typography>
+        </Box>
+      </Box>
 
-          <BookForm
-            onSubmit={onSubmit}
-            isSubmitting={addBook.isPending}
-            submitButtonText="Add Book"
-          />
-        </Paper>
-      </Container>
+      {/* Form area */}
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          justifyContent: "center",
+          pt: { xs: 1.5, md: 2 },
+          px: { xs: 2, md: 3 },
+          pb: 4,
+        }}
+      >
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: 480,
+            animation: "fadeSlideUp 0.4s ease-out",
+            "@keyframes fadeSlideUp": {
+              from: { opacity: 0, transform: "translateY(16px)" },
+              to: { opacity: 1, transform: "translateY(0)" },
+            },
+          }}
+        >
+          <Box
+            sx={{
+              p: { xs: 2, md: 2.5 },
+              borderRadius: "16px",
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.07)",
+              backdropFilter: "blur(20px)",
+            }}
+          >
+            <BookForm
+              onSubmit={onSubmit}
+              isSubmitting={addBook.isPending}
+              submitButtonText="Add to Library"
+            />
+          </Box>
+        </Box>
+      </Box>
     </Box>
   );
 };

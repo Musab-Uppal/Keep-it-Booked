@@ -18,9 +18,11 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
           justifyContent: "center",
           alignItems: "center",
           minHeight: "100vh",
+          background:
+            "linear-gradient(160deg, #0a0a14 0%, #0f0f22 50%, #0d1220 100%)",
         }}
       >
-        <CircularProgress />
+        <CircularProgress size={32} thickness={3} sx={{ color: "#FFC850" }} />
       </Box>
     );
   }

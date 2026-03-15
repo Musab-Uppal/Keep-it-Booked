@@ -32,119 +32,80 @@ const queryClient = new QueryClient({
 
 const theme = createTheme({
   palette: {
+    mode: "dark",
     primary: {
-      main: "#2563eb",
-      light: "#3b82f6",
-      dark: "#1d4ed8",
+      main: "#FFC850",
+      dark: "#FF8C42",
+      contrastText: "#0a0a14",
     },
     secondary: {
-      main: "#059669",
-      light: "#10b981",
-      dark: "#047857",
+      main: "#FF8C42",
     },
     background: {
-      default: "#f0f9ff",
-      paper: "#ffffff",
+      default: "#0a0a14",
+      paper: "#0f0f22",
     },
     error: {
-      main: "#ef4444",
+      main: "#ff4444",
     },
-    warning: {
-      main: "#f59e0b",
-    },
-    info: {
-      main: "#3b82f6",
-    },
-    success: {
-      main: "#10b981",
+    text: {
+      primary: "rgba(255,255,255,0.9)",
+      secondary: "rgba(255,255,255,0.45)",
     },
   },
   typography: {
     fontFamily:
-      '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif',
-    h4: {
-      fontWeight: 600,
-    },
-    h5: {
-      fontWeight: 600,
-    },
-    h6: {
-      fontWeight: 600,
-    },
+      '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    h4: { fontWeight: 700 },
+    h5: { fontWeight: 700 },
+    h6: { fontWeight: 600 },
   },
   components: {
-    MuiButton: {
+    MuiCssBaseline: {
       styleOverrides: {
-        root: {
-          textTransform: "none",
-          borderRadius: 8,
-          fontWeight: 600,
-          boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1)",
-          transition: "all 0.3s ease",
-          "&:hover": {
-            boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
-            transform: "translateY(-2px)",
-          },
+        "html, body": {
+          margin: 0,
+          padding: 0,
+          width: "100%",
+          overflowX: "hidden",
+          backgroundColor: "#0a0a14",
         },
-        contained: {
-          background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-          "&:hover": {
-            background: "linear-gradient(135deg, #1d4ed8 0%, #1560bd 100%)",
-          },
-        },
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-          boxShadow:
-            "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
-          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-          background:
-            "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%)",
-          border: "1px solid rgba(229, 231, 235, 0.6)",
-          "&:hover": {
-            boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)",
-            transform: "translateY(-8px)",
-            background:
-              "linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.95) 100%)",
-          },
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          "& .MuiOutlinedInput-root": {
-            borderRadius: 8,
-            transition: "all 0.3s ease",
-            background: "white",
-            "&:hover": {
-              boxShadow: "0 4px 12px rgba(37, 99, 235, 0.1)",
-            },
-            "&.Mui-focused": {
-              boxShadow: "0 4px 12px rgba(37, 99, 235, 0.2)",
-              background: "rgba(240, 249, 255, 0.5)",
-            },
-          },
+        "#root": {
+          width: "100%",
+          minHeight: "100vh",
+          overflowX: "hidden",
+          display: "flex",
+          flexDirection: "column",
         },
       },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          boxShadow: "0 10px 30px rgba(102, 126, 234, 0.2)",
-          position: "sticky",
+          width: "100%",
+          left: 0,
+          right: 0,
+          margin: 0,
         },
       },
     },
-    MuiContainer: {
+    MuiButton: {
       styleOverrides: {
         root: {
-          width: "100%",
-          transition: "all 0.3s ease",
+          textTransform: "none",
+          borderRadius: 8,
+          fontWeight: 600,
+          boxShadow: "none",
+          "&:hover": { boxShadow: "none" },
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.06)",
         },
       },
     },
@@ -173,7 +134,6 @@ function App() {
                   </PrivateRoute>
                 }
               />
-
               <Route
                 path="/add"
                 element={
@@ -182,7 +142,6 @@ function App() {
                   </PrivateRoute>
                 }
               />
-
               <Route
                 path="/edit/:id"
                 element={
@@ -191,7 +150,6 @@ function App() {
                   </PrivateRoute>
                 }
               />
-
               <Route
                 path="/book/:id"
                 element={
@@ -202,23 +160,28 @@ function App() {
               />
             </Routes>
           </Router>
+
           <Toaster
             position="top-right"
             toastOptions={{
               duration: 4000,
               style: {
-                borderRadius: "8px",
-                background: "#333",
-                color: "#fff",
+                borderRadius: "10px",
+                background: "rgba(28,28,48,0.95)",
+                backdropFilter: "blur(20px)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "rgba(255,255,255,0.9)",
+                fontSize: "0.85rem",
               },
               success: {
                 style: {
-                  background: "#10b981",
+                  border: "1px solid rgba(255,200,80,0.25)",
                 },
+                iconTheme: { primary: "#FFC850", secondary: "#0a0a14" },
               },
               error: {
                 style: {
-                  background: "#ef4444",
+                  border: "1px solid rgba(255,80,80,0.25)",
                 },
               },
             }}

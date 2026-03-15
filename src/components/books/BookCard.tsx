@@ -5,7 +5,6 @@ import {
   CardContent,
   CardMedia,
   Typography,
-  Rating,
   IconButton,
   Box,
   Dialog,
@@ -13,7 +12,6 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Chip,
 } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { format } from "date-fns";
@@ -33,14 +31,8 @@ const BookCard = ({ book, onDelete }: BookCardProps) => {
     onDelete(book.id);
     setDeleteDialogOpen(false);
   };
-
-  const handleCardClick = () => {
-    navigate(`/book/${book.id}`);
-  };
-
-  const handleStopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
+  const handleCardClick = () => navigate(`/book/${book.id}`);
+  const handleStopPropagation = (e: React.MouseEvent) => e.stopPropagation();
 
   return (
     <>
@@ -50,38 +42,34 @@ const BookCard = ({ book, onDelete }: BookCardProps) => {
           display: "flex",
           flexDirection: "column",
           height: "100%",
-          overflow: "hidden",
           cursor: "pointer",
-          transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-          background:
-            "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%)",
-          border: "1px solid rgba(229, 231, 235, 0.6)",
+          borderRadius: "16px",
+          overflow: "hidden",
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.06)",
+          backdropFilter: "blur(10px)",
+          transition: "all 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+          position: "relative",
           "&:hover": {
-            "& .book-cover": {
-              transform: "scale(1.08)",
-              filter: "brightness(1.1)",
-            },
-            "& .action-buttons": {
-              opacity: 1,
-            },
-            transform: "translateY(-12px) scale(1.02)",
-            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
-            background:
-              "linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.95) 100%)",
+            transform: "translateY(-8px)",
+            border: "1px solid rgba(255,200,80,0.25)",
+            boxShadow:
+              "0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,200,80,0.1)",
+            background: "rgba(255,255,255,0.05)",
+            "& .book-cover img": { transform: "scale(1.06)" },
+            "& .action-buttons": { opacity: 1, transform: "translateY(0)" },
           },
-          "&:active": {
-            transform: "translateY(-8px) scale(1.01)",
-          },
+          "&:active": { transform: "translateY(-4px)" },
         }}
       >
+        {/* Cover image */}
         <Box
           className="book-cover"
           sx={{
             position: "relative",
             height: 180,
             overflow: "hidden",
-            bgcolor: "background.default",
-            transition: "transform 0.4s ease, filter 0.4s ease",
+            background: "linear-gradient(135deg, #1a1a2e, #16213e)",
           }}
         >
           <CardMedia
@@ -90,37 +78,83 @@ const BookCard = ({ book, onDelete }: BookCardProps) => {
               width: "100%",
               height: "100%",
               objectFit: "cover",
+              transition: "transform 0.4s ease",
             }}
             image={book.cover_url || "/placeholder-book.jpg"}
             alt={book.title}
           />
+          {/* Gradient overlay */}
           <Box
+            sx={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(to top, rgba(10,10,20,0.7) 0%, transparent 50%)",
+            }}
+          />
+
+          {/* Rating badge */}
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 10,
+              left: 12,
+              display: "flex",
+              alignItems: "center",
+              gap: 0.75,
+              background: "rgba(0,0,0,0.6)",
+              backdropFilter: "blur(8px)",
+              borderRadius: "20px",
+              px: 1.25,
+              py: 0.4,
+            }}
+          >
+            <Typography sx={{ color: "#FFC850", fontSize: "0.65rem" }}>
+              ★
+            </Typography>
+            <Typography
+              sx={{
+                color: "rgba(255,255,255,0.9)",
+                fontSize: "0.65rem",
+                fontWeight: 700,
+              }}
+            >
+              {book.rating}
+            </Typography>
+          </Box>
+
+          {/* Action buttons */}
+          <Box
+            className="action-buttons"
+            onClick={handleStopPropagation}
             sx={{
               position: "absolute",
               top: 8,
               right: 8,
               display: "flex",
-              gap: 0.5,
-              opacity: 0,
-              transition: "opacity 0.3s ease",
+              gap: 0.6,
+              opacity: 0.9,
+              transform: "translateY(0)",
+              transition: "all 0.25s ease",
             }}
-            className="action-buttons"
           >
             <IconButton
               size="small"
-              onClick={handleStopPropagation}
-              onClickCapture={() => navigate(`/edit/${book.id}`)}
+              onClick={() => navigate(`/edit/${book.id}`)}
               sx={{
-                bgcolor: "secondary.main",
-                color: "white",
-                transition: "all 0.2s ease",
+                width: 38,
+                height: 38,
+                background: "#FFC850",
+                color: "#0a0a14",
+                fontWeight: 700,
                 "&:hover": {
-                  bgcolor: "secondary.dark",
+                  background: "#FFD870",
                   transform: "scale(1.1)",
                 },
+                transition: "all 0.2s",
               }}
             >
-              <EditIcon fontSize="small" />
+              <EditIcon sx={{ fontSize: 20 }} />
             </IconButton>
             <IconButton
               size="small"
@@ -129,68 +163,79 @@ const BookCard = ({ book, onDelete }: BookCardProps) => {
                 setDeleteDialogOpen(true);
               }}
               sx={{
-                bgcolor: "error.main",
-                color: "white",
-                transition: "all 0.2s ease",
+                width: 38,
+                height: 38,
+                background: "#ff6b6b",
+                color: "#fff",
+                fontWeight: 700,
                 "&:hover": {
-                  bgcolor: "error.dark",
+                  background: "#ff8585",
                   transform: "scale(1.1)",
                 },
+                transition: "all 0.2s",
               }}
             >
-              <DeleteIcon fontSize="small" />
+              <DeleteIcon sx={{ fontSize: 20 }} />
             </IconButton>
           </Box>
         </Box>
 
         <CardContent
-          sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+          sx={{ flexGrow: 1, p: 1.2, display: "flex", flexDirection: "column" }}
         >
           <Typography
-            variant="h6"
-            component="h2"
             sx={{
               fontWeight: 700,
-              mb: 1,
+              fontSize: "0.8rem",
+              color: "rgba(255,255,255,0.9)",
+              lineHeight: 1.3,
+              mb: 0.4,
               display: "-webkit-box",
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
-              color: "text.primary",
+              letterSpacing: "-0.01em",
             }}
           >
             {book.title}
           </Typography>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
-            <Rating value={book.rating} readOnly size="small" />
-            <Typography variant="body2" color="text.secondary">
-              {book.rating}/5
-            </Typography>
-          </Box>
+          <Typography
+            sx={{
+              fontSize: "0.6rem",
+              color: "rgba(255,200,80,0.6)",
+              letterSpacing: "0.08em",
+              mb: 0.6,
+              fontWeight: 600,
+              textTransform: "uppercase",
+            }}
+          >
+            ISBN {book.isbn}
+          </Typography>
 
-          <Box sx={{ mb: 2 }}>
-            <Chip
-              label={`ISBN: ${book.isbn}`}
-              size="small"
-              variant="outlined"
-              sx={{ mr: 1 }}
-            />
-          </Box>
-
-          <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>
-            📅 {format(new Date(book.date_read), DATE_FORMAT)}
+          <Typography
+            sx={{
+              fontSize: "0.6rem",
+              color: "rgba(255,255,255,0.3)",
+              mt: "auto",
+              pt: 0.6,
+              borderTop: "1px solid rgba(255,255,255,0.05)",
+            }}
+          >
+            {format(new Date(book.date_read), DATE_FORMAT)}
           </Typography>
 
           {book.notes && (
             <Typography
-              variant="body2"
-              color="text.secondary"
               sx={{
+                fontSize: "0.65rem",
+                color: "rgba(255,255,255,0.35)",
+                mt: 0.5,
                 display: "-webkit-box",
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
+                lineHeight: 1.5,
               }}
             >
               {book.notes}
@@ -199,20 +244,64 @@ const BookCard = ({ book, onDelete }: BookCardProps) => {
         </CardContent>
       </Card>
 
+      {/* Delete dialog */}
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
+        PaperProps={{
+          sx: {
+            background: "rgba(18,18,32,0.98)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "16px",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
+            minWidth: 360,
+          },
+        }}
       >
-        <DialogTitle>Delete Book</DialogTitle>
+        <DialogTitle
+          sx={{ color: "rgba(255,255,255,0.9)", fontWeight: 700, pt: 3, pb: 1 }}
+        >
+          Delete book?
+        </DialogTitle>
         <DialogContent>
-          <Typography>
-            Are you sure you want to delete "{book.title}"? This action cannot
-            be undone.
+          <Typography
+            sx={{
+              color: "rgba(255,255,255,0.5)",
+              fontSize: "0.88rem",
+              lineHeight: 1.6,
+            }}
+          >
+            <span style={{ color: "rgba(255,255,255,0.8)", fontWeight: 600 }}>
+              "{book.title}"
+            </span>{" "}
+            will be permanently removed from your library.
           </Typography>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleDelete} color="error" variant="contained">
+        <DialogActions sx={{ p: 2.5, gap: 1 }}>
+          <Button
+            onClick={() => setDeleteDialogOpen(false)}
+            sx={{
+              color: "rgba(255,255,255,0.5)",
+              borderRadius: "8px",
+              "&:hover": { background: "rgba(255,255,255,0.05)" },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDelete}
+            sx={{
+              background: "linear-gradient(135deg, #ff4444, #cc2222)",
+              color: "white",
+              fontWeight: 700,
+              borderRadius: "8px",
+              px: 2.5,
+              "&:hover": {
+                background: "linear-gradient(135deg, #ff5555, #dd3333)",
+              },
+            }}
+          >
             Delete
           </Button>
         </DialogActions>

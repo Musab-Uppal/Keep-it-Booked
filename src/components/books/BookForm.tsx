@@ -22,6 +22,26 @@ interface BookFormProps {
   submitButtonText: string;
 }
 
+const fieldSx = {
+  "& .MuiOutlinedInput-root": {
+    background: "rgba(255,255,255,0.04)",
+    borderRadius: "10px",
+    color: "rgba(255,255,255,0.85)",
+    fontSize: "0.9rem",
+    "& fieldset": { borderColor: "rgba(255,255,255,0.08)" },
+    "&:hover fieldset": { borderColor: "rgba(255,200,80,0.25)" },
+    "&.Mui-focused fieldset": { borderColor: "rgba(255,200,80,0.5)" },
+    "&.Mui-disabled": { opacity: 0.5 },
+  },
+  "& .MuiInputLabel-root": {
+    color: "rgba(255,255,255,0.4)",
+    fontSize: "0.85rem",
+    "&.Mui-focused": { color: "#FFC850" },
+  },
+  "& .MuiFormHelperText-root": { color: "#ff6b6b", fontSize: "0.75rem" },
+  "& .MuiInputBase-input::placeholder": { color: "rgba(255,255,255,0.2)" },
+};
+
 const BookForm = ({
   initialData,
   onSubmit,
@@ -45,100 +65,139 @@ const BookForm = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Controller
-        name="isbn"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            fullWidth
-            label="ISBN"
-            margin="normal"
-            error={!!errors.isbn}
-            helperText={errors.isbn?.message}
-            disabled={isSubmitting}
-          />
-        )}
-      />
-
-      <Controller
-        name="title"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            fullWidth
-            label="Title"
-            margin="normal"
-            error={!!errors.title}
-            helperText={errors.title?.message}
-            disabled={isSubmitting}
-          />
-        )}
-      />
-
-      <Box sx={{ my: 2 }}>
-        <Typography component="legend">Rating</Typography>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
         <Controller
-          name="rating"
+          name="title"
           control={control}
           render={({ field }) => (
-            <Rating
+            <TextField
               {...field}
-              onChange={(_, value) => field.onChange(value)}
+              fullWidth
+              label="Book Title"
+              error={!!errors.title}
+              helperText={errors.title?.message}
               disabled={isSubmitting}
+              sx={fieldSx}
             />
           )}
         />
-        {errors.rating && (
-          <Typography color="error" variant="caption">
-            {errors.rating.message}
-          </Typography>
-        )}
-      </Box>
 
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Controller
-          name="date_read"
+          name="isbn"
           control={control}
           render={({ field }) => (
-            <DatePicker
-              label="Date Read"
-              value={field.value}
-              onChange={field.onChange}
+            <TextField
+              {...field}
+              fullWidth
+              label="ISBN"
+              error={!!errors.isbn}
+              helperText={errors.isbn?.message}
               disabled={isSubmitting}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  margin: "normal",
-                  error: !!errors.date_read,
-                  helperText: errors.date_read?.message,
-                },
-              }}
+              sx={fieldSx}
             />
           )}
         />
-      </LocalizationProvider>
 
-      <Controller
-        name="notes"
-        control={control}
-        render={({ field }) => (
-          <TextField
-            {...field}
-            fullWidth
-            label="Notes"
-            multiline
-            rows={4}
-            margin="normal"
-            disabled={isSubmitting}
+        {/* Rating */}
+        <Box>
+          <Typography
+            sx={{
+              fontSize: "0.75rem",
+              color: "rgba(255,255,255,0.4)",
+              mb: 0.5,
+              letterSpacing: "0.05em",
+            }}
+          >
+            RATING
+          </Typography>
+          <Controller
+            name="rating"
+            control={control}
+            render={({ field }) => (
+              <Rating
+                {...field}
+                onChange={(_, value) => field.onChange(value)}
+                disabled={isSubmitting}
+                sx={{
+                  "& .MuiRating-iconFilled": { color: "#FFC850" },
+                  "& .MuiRating-iconEmpty": { color: "rgba(255,255,255,0.2)" },
+                  "& .MuiRating-iconHover": { color: "#FFD870" },
+                  fontSize: "1.5rem",
+                }}
+              />
+            )}
           />
-        )}
-      />
+          {errors.rating && (
+            <Typography sx={{ color: "#ff6b6b", fontSize: "0.75rem", mt: 0.4 }}>
+              {errors.rating.message}
+            </Typography>
+          )}
+        </Box>
 
-      <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
-        <Button type="submit" variant="contained" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : submitButtonText}
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <Controller
+            name="date_read"
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                label="Date Read"
+                value={field.value}
+                onChange={field.onChange}
+                disabled={isSubmitting}
+                sx={fieldSx}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: !!errors.date_read,
+                    helperText: errors.date_read?.message,
+                  },
+                }}
+              />
+            )}
+          />
+        </LocalizationProvider>
+
+        <Controller
+          name="notes"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              fullWidth
+              label="Notes"
+              multiline
+              rows={3}
+              disabled={isSubmitting}
+              placeholder="Your thoughts on this book…"
+              sx={fieldSx}
+            />
+          )}
+        />
+
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          sx={{
+            mt: 1,
+            py: 1.5,
+            background: isSubmitting
+              ? "rgba(255,200,80,0.3)"
+              : "linear-gradient(135deg, #FFC850, #FF8C42)",
+            color: "#0a0a14",
+            fontWeight: 800,
+            fontSize: "0.9rem",
+            borderRadius: "10px",
+            letterSpacing: "0.02em",
+            transition: "all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            "&:hover": {
+              transform: "translateY(-2px)",
+              boxShadow: "0 10px 30px rgba(255,200,80,0.3)",
+              background: "linear-gradient(135deg, #FFD060, #FF9C52)",
+            },
+            "&:disabled": { color: "rgba(10,10,20,0.5)" },
+          }}
+        >
+          {isSubmitting ? "Saving…" : submitButtonText}
         </Button>
       </Box>
     </form>
