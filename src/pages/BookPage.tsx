@@ -16,6 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useBooks } from "../hooks/useBooks";
 import { supabase } from "../lib/supabase";
 import BookDetails from "../components/books/BookDetails";
+import BookNotes from "../components/books/BookNotes";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import ErrorAlert from "../components/common/ErrorAlert";
 import { Book } from "../types";
@@ -212,6 +213,19 @@ const BookPage = () => {
           onUpdateNotes={handleUpdateNotes}
           isUpdating={updateNotes.isPending}
         />
+
+        {/* Book Notes Section */}
+        {id && (
+          <Box
+            sx={{
+              mt: 4,
+              pt: 3,
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+            }}
+          >
+            <BookNotes bookId={id} />
+          </Box>
+        )}
       </Box>
 
       {/* Delete dialog */}
