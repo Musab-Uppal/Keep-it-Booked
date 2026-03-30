@@ -1,7 +1,18 @@
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { TextField, Button, Rating, Box, Typography } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Rating,
+  Box,
+  Typography,
+  IconButton,
+  InputAdornment,
+  Tooltip,
+} from "@mui/material";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import { Link } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -9,9 +20,8 @@ import { BookFormData } from "../../types";
 
 const bookSchema = z.object({
   isbn: z.string().min(10, "ISBN must be at least 10 characters"),
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "Book name is required"),
   rating: z.number().min(1, "Rating is required").max(5),
-  notes: z.string().optional(),
   date_read: z.date(),
 });
 
@@ -58,7 +68,6 @@ const BookForm = ({
       isbn: initialData?.isbn || "",
       title: initialData?.title || "",
       rating: initialData?.rating || 3,
-      notes: initialData?.notes || "",
       date_read: initialData?.date_read || new Date(),
     },
   });
@@ -73,7 +82,7 @@ const BookForm = ({
             <TextField
               {...field}
               fullWidth
-              label="Book Title"
+              label="Book Name"
               error={!!errors.title}
               helperText={errors.title?.message}
               disabled={isSubmitting}
@@ -93,6 +102,23 @@ const BookForm = ({
               error={!!errors.isbn}
               helperText={errors.isbn?.message}
               disabled={isSubmitting}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Tooltip title="What is ISBN?">
+                      <IconButton
+                        component={Link}
+                        to="/what-is-isbn"
+                        size="small"
+                        edge="start"
+                        sx={{ color: "rgba(255,200,80,0.85)" }}
+                      >
+                        <HelpOutlineIcon sx={{ fontSize: 18 }} />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                ),
+              }}
               sx={fieldSx}
             />
           )}
@@ -156,23 +182,6 @@ const BookForm = ({
             )}
           />
         </LocalizationProvider>
-
-        <Controller
-          name="notes"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="Notes"
-              multiline
-              rows={3}
-              disabled={isSubmitting}
-              placeholder="Your thoughts on this book…"
-              sx={fieldSx}
-            />
-          )}
-        />
 
         <Button
           type="submit"

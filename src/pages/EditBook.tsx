@@ -78,7 +78,6 @@ const EditBook = () => {
     isbn: book.isbn,
     title: book.title,
     rating: book.rating,
-    notes: book.notes || "",
     date_read: new Date(book.date_read),
   };
 

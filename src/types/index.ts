@@ -3,7 +3,7 @@ export interface Book {
   isbn: string;
   title: string;
   rating: number;
-  notes: string | null;
+  notes?: string | null;
   date_read: string;
   cover_url: string | null;
   user_id: string;
@@ -24,7 +24,6 @@ export interface BookFormData {
   isbn: string;
   title: string;
   rating: number;
-  notes?: string;
   date_read: Date;
 }
 

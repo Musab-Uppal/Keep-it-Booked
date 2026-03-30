@@ -200,7 +200,7 @@ const Dashboard = () => {
       <Box sx={{ px: { xs: 2, md: 3, lg: 4 }, mt: 1.5, mb: 3 }}>
         <TextField
           fullWidth
-          placeholder="Search by title or ISBN…"
+          placeholder="Search by book name or ISBN…"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           sx={{

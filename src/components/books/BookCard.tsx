@@ -202,6 +202,20 @@ const BookCard = ({ book, onDelete }: BookCardProps) => {
 
           <Typography
             sx={{
+              fontSize: "0.65rem",
+              color: "rgba(255,255,255,0.55)",
+              mb: 0.6,
+              display: "-webkit-box",
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+          >
+            Rating {book.rating}/5
+          </Typography>
+
+          <Typography
+            sx={{
               fontSize: "0.6rem",
               color: "rgba(255,200,80,0.6)",
               letterSpacing: "0.08em",
@@ -224,23 +238,6 @@ const BookCard = ({ book, onDelete }: BookCardProps) => {
           >
             {format(new Date(book.date_read), DATE_FORMAT)}
           </Typography>
-
-          {book.notes && (
-            <Typography
-              sx={{
-                fontSize: "0.65rem",
-                color: "rgba(255,255,255,0.35)",
-                mt: 0.5,
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                lineHeight: 1.5,
-              }}
-            >
-              {book.notes}
-            </Typography>
-          )}
         </CardContent>
       </Card>
 

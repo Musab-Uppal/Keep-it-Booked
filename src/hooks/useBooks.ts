@@ -9,11 +9,6 @@ interface UpdateBookData extends Partial<BookFormData> {
   id: string;
 }
 
-interface UpdateNotesData {
-  id: string;
-  notes: string;
-}
-
 export const useBooks = () => {
   const queryClient = useQueryClient();
 
@@ -72,7 +67,6 @@ export const useBooks = () => {
         isbn: bookData.isbn,
         title: bookData.title,
         rating: bookData.rating,
-        notes: bookData.notes || "",
         date_read: bookData.date_read.toISOString().split("T")[0],
         cover_url: `${IMG_URL}/${bookData.isbn}-M.jpg`,
         user_id: user.id,
@@ -113,7 +107,6 @@ export const useBooks = () => {
         isbn: bookData.isbn,
         title: bookData.title,
         rating: bookData.rating,
-        notes: bookData.notes,
         date_read: bookData.date_read?.toISOString().split("T")[0],
         cover_url: `${IMG_URL}/${bookData.isbn}-M.jpg`,
         updated_at: new Date().toISOString(),
@@ -164,37 +157,6 @@ export const useBooks = () => {
     },
   });
 
-  const updateNotes = useMutation({
-    mutationFn: async ({ id, notes }: UpdateNotesData) => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) throw new Error("Not authenticated");
-
-      const { data, error } = await supabase
-        .from("books")
-        .update({
-          notes,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", id)
-        .eq("user_id", user.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data as Book;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["books"] });
-      toast.success("Notes updated!");
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to update notes");
-    },
-  });
-
   return {
     books,
     isLoading,
@@ -204,6 +166,5 @@ export const useBooks = () => {
     addBook,
     updateBook,
     deleteBook,
-    updateNotes,
   };
 };

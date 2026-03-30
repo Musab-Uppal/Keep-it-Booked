@@ -24,7 +24,7 @@ import { Book } from "../types";
 const BookPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { books, deleteBook, updateNotes } = useBooks();
+  const { books, deleteBook } = useBooks();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -69,16 +69,6 @@ const BookPage = () => {
     try {
       await deleteBook.mutateAsync(id);
       navigate("/dashboard");
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleUpdateNotes = async (notes: string) => {
-    if (!id) return;
-    try {
-      const updatedBook = await updateNotes.mutateAsync({ id, notes });
-      setBook(updatedBook);
     } catch (error) {
       console.error(error);
     }
@@ -208,11 +198,7 @@ const BookPage = () => {
           },
         }}
       >
-        <BookDetails
-          book={book}
-          onUpdateNotes={handleUpdateNotes}
-          isUpdating={updateNotes.isPending}
-        />
+        <BookDetails book={book} />
 
         {/* Book Notes Section */}
         {id && (

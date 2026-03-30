@@ -11,18 +11,15 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
-  Alert,
   Collapse,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { BookNote } from "../../types";
 import { useNotes } from "../../hooks/useNotes";
-import { summarizeNotes } from "../../services/groqService";
 import { format } from "date-fns";
 
 interface BookNotesProps {
@@ -39,10 +36,6 @@ const BookNotes = ({ bookId }: BookNotesProps) => {
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-  const [isSummarizing, setIsSummarizing] = useState(false);
-  const [summarizeError, setSummarizeError] = useState<string | null>(null);
-  const [summaryDialogOpen, setSummaryDialogOpen] = useState(false);
-  const [summarizedContent, setSummarizedContent] = useState<string>("");
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
 
   const handleAddNote = async () => {
@@ -50,6 +43,7 @@ const BookNotes = ({ bookId }: BookNotesProps) => {
       alert("Please fill in both title and content");
       return;
     }
+
     await addNote.mutateAsync({
       bookId,
       title: newNoteTitle,
@@ -65,6 +59,7 @@ const BookNotes = ({ bookId }: BookNotesProps) => {
       alert("Please fill in both title and content");
       return;
     }
+
     await updateNote.mutateAsync({
       id: editingId,
       title: editTitle,
@@ -76,48 +71,15 @@ const BookNotes = ({ bookId }: BookNotesProps) => {
   };
 
   const handleDeleteNote = async () => {
-    if (deleteConfirmId) {
-      await deleteNote.mutateAsync(deleteConfirmId);
-      setDeleteConfirmId(null);
-    }
+    if (!deleteConfirmId) return;
+    await deleteNote.mutateAsync(deleteConfirmId);
+    setDeleteConfirmId(null);
   };
 
   const handleStartEdit = (note: BookNote) => {
     setEditingId(note.id);
     setEditTitle(note.title);
     setEditContent(note.content);
-  };
-
-  const handleSummarizeAllNotes = async () => {
-    if (!notes || notes.length === 0) {
-      setSummarizeError("No notes to summarize");
-      return;
-    }
-
-    const allContent = notes
-      .map((note) => `# ${note.title}\n${note.content}`)
-      .join("\n\n");
-
-    if (allContent.length < 300) {
-      setSummarizeError(
-        "Total notes content is too short to summarize (minimum 300 characters)",
-      );
-      return;
-    }
-
-    setIsSummarizing(true);
-    setSummarizeError(null);
-    try {
-      const summarized = await summarizeNotes(allContent);
-      setSummarizedContent(summarized);
-      setSummaryDialogOpen(true);
-    } catch (error) {
-      setSummarizeError(
-        error instanceof Error ? error.message : "Failed to summarize notes",
-      );
-    } finally {
-      setIsSummarizing(false);
-    }
   };
 
   const toggleNoteExpanded = (noteId: string) => {
@@ -132,7 +94,6 @@ const BookNotes = ({ bookId }: BookNotesProps) => {
 
   return (
     <Box sx={{ mb: 3 }}>
-      {/* Header */}
       <Box
         sx={{
           display: "flex",
@@ -152,67 +113,30 @@ const BookNotes = ({ bookId }: BookNotesProps) => {
         >
           Notes ({notes?.length || 0})
         </Typography>
-        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-          {notes && notes.length > 0 && (
-            <Button
-              startIcon={<AutoAwesomeIcon sx={{ fontSize: 16 }} />}
-              onClick={handleSummarizeAllNotes}
-              disabled={isSummarizing}
-              sx={{
-                color: "rgba(255,200,80,0.8)",
-                border: "1px solid rgba(255,200,80,0.2)",
-                borderRadius: "10px",
-                px: 1.5,
-                py: 0.6,
-                fontSize: "0.75rem",
-                fontWeight: 600,
-                transition: "all 0.2s",
-                "&:hover": {
-                  color: "#FFC850",
-                  borderColor: "rgba(255,200,80,0.4)",
-                  background: "rgba(255,200,80,0.06)",
-                },
-              }}
-            >
-              {isSummarizing ? "Summarizing..." : "Summarize All"}
-            </Button>
-          )}
-          <Button
-            startIcon={<AddIcon sx={{ fontSize: 16 }} />}
-            onClick={() => setIsAddingNote(!isAddingNote)}
-            sx={{
-              color: "rgba(255,200,80,0.8)",
-              border: "1px solid rgba(255,200,80,0.2)",
-              borderRadius: "10px",
-              px: 1.5,
-              py: 0.6,
-              fontSize: "0.75rem",
-              fontWeight: 600,
-              transition: "all 0.2s",
-              "&:hover": {
-                color: "#FFC850",
-                borderColor: "rgba(255,200,80,0.4)",
-                background: "rgba(255,200,80,0.06)",
-              },
-            }}
-          >
-            {isAddingNote ? "Cancel" : "Add Note"}
-          </Button>
-        </Box>
+
+        <Button
+          startIcon={<AddIcon sx={{ fontSize: 16 }} />}
+          onClick={() => setIsAddingNote(!isAddingNote)}
+          sx={{
+            color: "rgba(255,200,80,0.8)",
+            border: "1px solid rgba(255,200,80,0.2)",
+            borderRadius: "10px",
+            px: 1.5,
+            py: 0.6,
+            fontSize: "0.75rem",
+            fontWeight: 600,
+            transition: "all 0.2s",
+            "&:hover": {
+              color: "#FFC850",
+              borderColor: "rgba(255,200,80,0.4)",
+              background: "rgba(255,200,80,0.06)",
+            },
+          }}
+        >
+          {isAddingNote ? "Cancel" : "Add Note"}
+        </Button>
       </Box>
 
-      {/* Error Messages */}
-      {summarizeError && (
-        <Alert
-          severity="error"
-          onClose={() => setSummarizeError(null)}
-          sx={{ mb: 2 }}
-        >
-          {summarizeError}
-        </Alert>
-      )}
-
-      {/* Add Note Form */}
       <Collapse in={isAddingNote} sx={{ mb: 2 }}>
         <Card
           sx={{
@@ -288,14 +212,12 @@ const BookNotes = ({ bookId }: BookNotesProps) => {
         </Card>
       </Collapse>
 
-      {/* Loading state */}
       {isLoading && (
         <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
           <CircularProgress size={30} />
         </Box>
       )}
 
-      {/* Notes List */}
       {!isLoading && (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
           {notes && notes.length > 0 ? (
@@ -310,7 +232,6 @@ const BookNotes = ({ bookId }: BookNotesProps) => {
                 }}
               >
                 {editingId === note.id ? (
-                  // Edit Mode
                   <Box sx={{ p: 2 }}>
                     <TextField
                       fullWidth
@@ -383,7 +304,6 @@ const BookNotes = ({ bookId }: BookNotesProps) => {
                     </Box>
                   </Box>
                 ) : (
-                  // View Mode
                   <Box>
                     <Box
                       sx={{
@@ -486,7 +406,6 @@ const BookNotes = ({ bookId }: BookNotesProps) => {
                       </Box>
                     </Box>
 
-                    {/* Expanded Content */}
                     <Collapse in={expandedNotes.has(note.id)}>
                       <Box
                         sx={{
@@ -528,47 +447,6 @@ const BookNotes = ({ bookId }: BookNotesProps) => {
         </Box>
       )}
 
-      {/* Summary Dialog */}
-      <Dialog
-        open={summaryDialogOpen}
-        onClose={() => {
-          setSummaryDialogOpen(false);
-          setSummarizedContent("");
-        }}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle sx={{ color: "rgba(255,255,255,0.9)" }}>
-          Summary of All Notes
-        </DialogTitle>
-        <DialogContent>
-          <Typography
-            sx={{
-              color: "rgba(255,255,255,0.7)",
-              fontSize: "0.9rem",
-              lineHeight: 1.6,
-              mt: 2,
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-word",
-            }}
-          >
-            {summarizedContent}
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              setSummaryDialogOpen(false);
-              setSummarizedContent("");
-            }}
-            sx={{ color: "rgba(255,255,255,0.5)" }}
-          >
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
       <Dialog
         open={deleteConfirmId !== null}
         onClose={() => setDeleteConfirmId(null)}

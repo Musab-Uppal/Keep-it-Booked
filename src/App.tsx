@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 import AddBook from "./pages/AddBook";
 import EditBook from "./pages/EditBook";
 import BookPage from "./pages/BookPage";
+import WhatIsIsbn from "./pages/WhatIsIsbn";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import AuthCallback from "./components/auth/AuthCallback";
@@ -125,6 +126,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/what-is-isbn" element={<WhatIsIsbn />} />
 
               <Route
                 path="/dashboard"
