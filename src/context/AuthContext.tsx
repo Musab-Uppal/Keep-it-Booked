@@ -7,6 +7,24 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+const buildDefaultCallbackUrl = (): string => {
+  const baseUrl = import.meta.env.BASE_URL || "/";
+  const normalizedBase =
+    baseUrl === "/" || baseUrl === "./"
+      ? ""
+      : baseUrl.endsWith("/")
+        ? baseUrl.slice(0, -1)
+        : baseUrl;
+
+  return `${window.location.origin}${normalizedBase}/auth/callback`;
+};
+
+const resolveOAuthCallbackUrl = (): string => {
+  // Vite loads this from the active mode env file: .env for dev and
+  // .env.production for production builds.
+  return import.meta.env.VITE_CALLBACK_URL?.trim() || buildDefaultCallbackUrl();
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,10 +60,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signInWithGoogle = async (): Promise<void> => {
     try {
+      const callbackUrl = resolveOAuthCallbackUrl();
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: callbackUrl,
           queryParams: {
             access_type: "offline",
             prompt: "consent",

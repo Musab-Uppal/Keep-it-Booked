@@ -3,6 +3,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
@@ -113,6 +114,21 @@ const theme = createTheme({
   },
 });
 
+const RootEntryRoute = () => {
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const hasOAuthParams =
+    searchParams.has("code") ||
+    searchParams.has("error") ||
+    searchParams.has("error_description");
+
+  if (hasOAuthParams) {
+    return <Navigate to={`/auth/callback${location.search}`} replace />;
+  }
+
+  return <Navigate to="/dashboard" replace />;
+};
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -122,7 +138,7 @@ function App() {
           <Router>
             <Navbar />
             <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/" element={<RootEntryRoute />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/auth/callback" element={<AuthCallback />} />

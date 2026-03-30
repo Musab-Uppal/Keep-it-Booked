@@ -8,14 +8,44 @@ const AuthCallback = () => {
 
   useEffect(() => {
     const handleAuthCallback = async () => {
-      const { error } = await supabase.auth.getSession();
-      if (error) {
-        console.error("Auth callback error:", error);
-        navigate("/login");
-      } else {
-        navigate("/dashboard");
+      try {
+        const searchParams = new URLSearchParams(window.location.search);
+        const code = searchParams.get("code");
+        const oauthError =
+          searchParams.get("error") || searchParams.get("error_description");
+
+        if (oauthError) {
+          console.error("OAuth callback returned an error:", oauthError);
+          navigate("/login", { replace: true });
+          return;
+        }
+
+        if (code) {
+          const { error: exchangeError } =
+            await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeError) {
+            throw exchangeError;
+          }
+        }
+
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
+
+        if (error || !session) {
+          console.error("Auth callback error:", error || "No session found");
+          navigate("/login", { replace: true });
+          return;
+        }
+
+        navigate("/dashboard", { replace: true });
+      } catch (error) {
+        console.error("Auth callback handling failed:", error);
+        navigate("/login", { replace: true });
       }
     };
+
     handleAuthCallback();
   }, [navigate]);
 
